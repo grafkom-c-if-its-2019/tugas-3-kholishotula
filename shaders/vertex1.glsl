@@ -1,29 +1,35 @@
 precision mediump float;
 
-attribute vec4 aPosition;
-uniform vec3 translation;
-uniform vec3 translationBack;
-uniform float theta;
+attribute vec3 aPosition;
+uniform vec3 theta;
 
 void main() {
-  mat4 translate = mat4 (
+  
+  vec3 angle = radians(theta);
+  vec3 cosinus = cos(angle);
+  vec3 sinus = sin(angle);
+
+  mat4 rotateX = mat4(
     1.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0,
-    translation,   1.0
+    0.0, cosinus.x, sinus.x, 0.0,
+    0.0, -sinus.x, cosinus.x, 0.0,
+    0.0, 0.0, 0.0, 1.0
   );
-  mat4 rotate = mat4 (
-    cos(theta), sin(theta), 0.0, 0.0,
-    -sin(theta), cos(theta), 0.0, 0.0,
+
+  mat4 rotateY = mat4(
+    cosinus.y, 0.0, -sinus.y, 0.0,
+    0.0, 1.0, 0.0, 0.0,
+    sinus.y, 0.0, cosinus.y, 0.0,
+    0.0, 0.0, 0.0, 1.0
+  );
+
+  mat4 rotateZ = mat4(
+    cosinus.z, sinus.z, 0.0, 0.0,
+    -sinus.z, cosinus.z, 0.0, 0.0,
     0.0, 0.0, 1.0, 0.0,
     0.0, 0.0, 0.0, 1.0
   );
-  mat4 translateBack = mat4 (
-    1.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0,
-    translationBack,   1.0
-  );
+
   // perkalian dari kanan
-  gl_Position = translateBack * rotate * translate * aPosition;
+  gl_Position = vec4(aPosition, 1.0) * rotateZ * rotateY * rotateX;
 }
